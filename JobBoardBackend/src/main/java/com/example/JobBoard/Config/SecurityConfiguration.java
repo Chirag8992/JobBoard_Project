@@ -38,7 +38,9 @@ public class SecurityConfiguration {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(r -> r
                         .requestMatchers("/register/**", "/login", "/job", "/uploads/**").permitAll()
-                        .anyRequest().authenticated())
+                        .requestMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**").permitAll() // ✅ Allow preflight
+                        .anyRequest().authenticated()
+                )
                 .headers(headers -> headers
                         .frameOptions(frame -> frame.deny()) // Or remove this line entirely
                         // Add this instead:
