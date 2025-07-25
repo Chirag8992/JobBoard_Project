@@ -109,4 +109,15 @@ public class ApplicationService {
     public List<Application> getAllApplications() {
         return applicationRepo.findAll();
     }
+
+    public ResponseEntity<?> rejectApplication(int applicationId) {
+        Application a = applicationRepo.findById(applicationId).orElse(null);
+
+        if(a == null){
+            return ResponseEntity.notFound().build();
+        }
+
+        a.setStatus("Reject");
+        return ResponseEntity.ok("rejected successfully ");
+    }
 }

@@ -59,5 +59,10 @@ public class ApplicationController {
         }
     }
 
+    @PostMapping("/{applicationId}/reject")
+    public ResponseEntity<?> rejectApplication(@PathVariable int applicationId){
+        return applicationService.rejectApplication( applicationId);
+    }
+
 
 }

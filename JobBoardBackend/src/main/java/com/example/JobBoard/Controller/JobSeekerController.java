@@ -1,6 +1,8 @@
 package com.example.JobBoard.Controller;
 
 
+import com.cloudinary.Cloudinary;
+import com.cloudinary.utils.ObjectUtils;
 import com.example.JobBoard.Model.Application;
 import com.example.JobBoard.Model.JobSeeker;
 import com.example.JobBoard.Model.Users;
@@ -20,6 +22,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @RestController
@@ -27,7 +30,8 @@ import java.util.UUID;
 public class JobSeekerController {
 
     BCryptPasswordEncoder bcrypt = new BCryptPasswordEncoder();
-
+    @Autowired
+    private Cloudinary cloudinary;
 
     @Autowired
     private JobseekerService jobseekerService;
@@ -71,19 +75,20 @@ public class JobSeekerController {
     }
 
     @PostMapping("/resume/upload")
-    public ResponseEntity<String> uploadResume(@RequestParam("file") MultipartFile file,@AuthenticationPrincipal UserDetails userDetails) {
+    public ResponseEntity<String> uploadResume(@RequestParam("file") MultipartFile file,
+                                               @AuthenticationPrincipal UserDetails userDetails) {
         try {
-            String fileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
-            Path path = Paths.get("uploads/" + fileName);
-            Files.createDirectories(path.getParent());
-            Files.write(path, file.getBytes());
+            Map uploadResult = cloudinary.uploader().upload(file.getBytes(), ObjectUtils.asMap(
+                    "resource_type", "auto" // auto detects if PDF/image/video
+            ));
 
-            String resumeUrl = "/uploads/" + fileName; // This will be stored in DB
-            jobseekerService.addResume(resumeUrl, userDetails.getUsername());
-            return ResponseEntity.ok(resumeUrl);
+            String url = uploadResult.get("secure_url").toString();
+            jobseekerService.addResume(url, userDetails.getUsername()); // store URL in DB
+
+            return ResponseEntity.ok(url);
 
         } catch (IOException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Upload failed");
+            return ResponseEntity.status(500).body("Upload failed: " + e.getMessage());
         }
     }
 

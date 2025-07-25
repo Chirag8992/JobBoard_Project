@@ -11,4 +11,4 @@ COPY . .
 RUN mvn clean package -DskipTests
 
 # Run the built jar file
-CMD ["java", "-jar", "target/jobboard-0.0.1-SNAPSHOT.jar"]
+CMD ["java", "-jar", "target/JobBoard-0.0.1-SNAPSHOT.jar"]

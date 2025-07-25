@@ -40,19 +40,13 @@ export default function ManageApplications() {
     fetchApplications();
   }, []);
 
-  // Function to handle shortlisting application
   const handleShortlistApplication = async (applicationId) => {
     try {
-      // Set loading state for this specific application
       setActionLoading(prev => ({ ...prev, [applicationId]: 'shortlisting' }));
 
-      // Get employeeId from localStorage or context (adjust according to your auth system)
-      const employeeId = localStorage.getItem('employeeId') || '1'; // Replace with actual employee ID
 
-      console.log(localStorage.getItem('token'))
-      // Make API call to shortlist the application
       const response = await api.post(
-        `/${applicationId}/shortlist`,{},
+        `/${applicationId}/shortlist`, {},
         {
           headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
           withCredentials: true,
@@ -93,7 +87,7 @@ export default function ManageApplications() {
 
       // You'll need to create a similar endpoint for rejection in your backend
       const response = await api.post(
-        `/applications/${applicationId}/reject?employeeId=${employeeId}`,
+        `/applications/${applicationId}/reject`,
         {},
         {
           headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
@@ -193,45 +187,30 @@ export default function ManageApplications() {
                 <div className="flex flex-wrap gap-2 mt-2">
                   {app.status === 'Pending' && (
                     <>
-                      <button 
+                      <button
                         onClick={() => handleShortlistApplication(app.id)}
                         disabled={actionLoading[app.id] === 'shortlisting'}
-                        className={`flex items-center gap-1 px-3 py-1.5 text-sm text-white rounded-full transition-colors ${
-                          actionLoading[app.id] === 'shortlisting' 
-                            ? 'bg-blue-400 cursor-not-allowed' 
-                            : 'bg-blue-600 hover:bg-blue-700'
-                        }`}
+                        className={`flex items-center gap-1 px-3 py-1.5 text-sm text-white rounded-full transition-colors ${actionLoading[app.id] === 'shortlisting'
+                          ? 'bg-blue-400 cursor-not-allowed'
+                          : 'bg-blue-600 hover:bg-blue-700'
+                          }`}
                       >
-                        <BadgeCheck size={16} /> 
+                        <BadgeCheck size={16} />
                         {actionLoading[app.id] === 'shortlisting' ? 'Shortlisting...' : 'Shortlist'}
                       </button>
-                      
-                      <button 
+
+                      <button
                         onClick={() => handleRejectApplication(app.id)}
                         disabled={actionLoading[app.id] === 'rejecting'}
-                        className={`flex items-center gap-1 px-3 py-1.5 text-sm text-white rounded-full transition-colors ${
-                          actionLoading[app.id] === 'rejecting' 
-                            ? 'bg-red-400 cursor-not-allowed' 
-                            : 'bg-red-500 hover:bg-red-600'
-                        }`}
+                        className={`flex items-center gap-1 px-3 py-1.5 text-sm text-white rounded-full transition-colors ${actionLoading[app.id] === 'rejecting'
+                          ? 'bg-red-400 cursor-not-allowed'
+                          : 'bg-red-500 hover:bg-red-600'
+                          }`}
                       >
-                        <UserMinus size={16} /> 
+                        <UserMinus size={16} />
                         {actionLoading[app.id] === 'rejecting' ? 'Rejecting...' : 'Reject'}
                       </button>
-                      
-                      <a
-                        href={`http://localhost:8080${app.resumeUrl}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center gap-1 px-3 py-1.5 text-sm bg-gray-100 text-gray-700 rounded-full hover:bg-gray-200"
-                      >
-                        <FileText size={16} /> View Resume
-                      </a>
-                    </>
-                  )}
 
-                  {app.status === 'Accepted' && (
-                    <>
                       <a
                         href={app.resumeUrl}
                         target="_blank"
@@ -240,7 +219,19 @@ export default function ManageApplications() {
                       >
                         <FileText size={16} /> View Resume
                       </a>
+
                     </>
+                  )}
+
+                  {app.status === 'Accepted' && (
+                    <a
+                      href={app.resumeUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-1 px-3 py-1.5 text-sm bg-gray-100 text-gray-700 rounded-full hover:bg-gray-200"
+                    >
+                      <FileText size={16} /> View Resume
+                    </a>
                   )}
 
                   {app.status === 'Rejected' && (
@@ -252,6 +243,7 @@ export default function ManageApplications() {
                     >
                       <FileText size={16} /> View Resume
                     </a>
+
                   )}
                 </div>
               </div>
