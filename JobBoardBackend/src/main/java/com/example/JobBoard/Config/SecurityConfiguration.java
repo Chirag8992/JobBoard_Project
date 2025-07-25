@@ -59,10 +59,10 @@ public class SecurityConfiguration {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
 
-        // Allow specific origins (more secure) or use allowedOriginPatterns for patterns
-        configuration.setAllowedOriginPatterns(Arrays.asList("http://localhost:*"));
-        // Or for development, you can use:
-        // configuration.setAllowedOrigins(Arrays.asList("http://localhost:5173"));
+        configuration.setAllowedOrigins(Arrays.asList(
+                "https://job-board-project-opal.vercel.app", // ✅ Your Vercel frontend
+                "http://localhost:5173"                       // ✅ Optional: for local dev
+        ));
 
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("*"));
@@ -73,6 +73,7 @@ public class SecurityConfiguration {
         source.registerCorsConfiguration("/**", configuration);
         return source;
     }
+
 
     @Bean
     public AuthenticationProvider authenticationProvider() {
